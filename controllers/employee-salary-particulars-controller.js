@@ -14,6 +14,9 @@ const employee_salary_particulars_controllers = {
         const employee_email = req.session.Email;
         try{
             const emp_rec = await database.findOne(employee, {Email: employee_email});
+            res.render("employee-salaryParticulars", {email: req.session.Email, emp_type: req.session.Employee_type, ETI_weekdayIndex: req.session.ETI_weekdayIndex, emp_rec});
+        }catch (err){
+            console.error("Error processing employee details: ", err);
             const emp_pay = await database.findOne(payroll, {Email: employee_email, Week: 1});
             //Overtime Pay & Hours
             const Total_OT_Hours = emp_pay.Mon_OT_Hours + emp_pay.Tue_OT_Hours + emp_pay.Wed_OT_Hours + 
