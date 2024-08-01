@@ -25,7 +25,7 @@ const app = express();
 
 dotenv.config();
 const port = process.env.PORT;
-const hostname = process.env.HOSTNAME;
+// const hostname = process.env.HOSTNAME;
 app.set('view engine', 'hbs');
 
 const partialsPath = path.join(__dirname, "views/partials");
@@ -56,8 +56,8 @@ app.use(session({
 app.use('/', routes);
 
 //PST: Sunday 12am/ UTC: Saturday 4pm
-schedule.scheduleJob('0 0 * * 0', function(){
-    axios.post(`http://${hostname}:${port}/update_employee_payroll`)
+schedule.scheduleJob('0 16 * * 6', function(){
+    axios.post('https://payroll-os1n.onrender.com/update_employee_payroll')//change the link
         .then(response => {
             console.log(response.data);
         })
@@ -70,8 +70,6 @@ app.use(function(req, res){
     res.status(404).send('Error 404: Page Not Found');
 });
 
-// addData.populateEmployees();
-// addDataPayroll.populate_payroll();
 app.listen(port, hostname, function() {
-    console.log(`Server running at http://${hostname}:${port}`);
+    console.log('listening on port:' + port);
 }); 
