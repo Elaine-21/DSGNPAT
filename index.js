@@ -15,11 +15,9 @@ const routes = require('./routes/routes.js');
 const hbs = require('hbs');
 const session = require('express-session');
 const database = require('./models/database.js');
-const schedule = require('node-schedule');
-const axios = require('axios');
+// const schedule = require('node-schedule');
+// const axios = require('axios');
 const MongoStore = require('connect-mongo');
-const addData = require('./add_data.js');
-const addDataPayroll = require('./add_data_payroll.js');
 const path =require("path")
 const app = express();
 
@@ -56,15 +54,15 @@ app.use(session({
 app.use('/', routes);
 
 //PST: Sunday 12am/ UTC: Saturday 4pm
-schedule.scheduleJob('0 16 * * 6', function(){
-    axios.post('https://payroll-os1n.onrender.com/update_employee_payroll')//change the link
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error("Error Updating Payroll:", error);
-        });
-});
+// schedule.scheduleJob('0 16 * * 6', function(){
+//     axios.post('https://payroll-os1n.onrender.com/update_employee_payroll')//change the link
+//         .then(response => {
+//             console.log(response.data);
+//         })
+//         .catch(error => {
+//             console.error("Error Updating Payroll:", error);
+//         });
+// });
 
 app.use(function(req, res){
     res.status(404).send('Error 404: Page Not Found');
