@@ -37,7 +37,26 @@ var employee_schema = new mongoose.Schema({
     IsTimedIn: {
         type: Boolean,
         default: false
+    },
+    IsValid: {
+        type: Boolean,
+        default: true
     }
 });
+
+
+employee_schema.statics.getNullEmployee = function () {
+    return new this({
+        First_Name: "Unknown",
+        Last_Name: "Employee",
+        Contact_Number: "N/A",
+        Email: "N/A",
+        Password: "N/A",
+        Address: "N/A",
+        Employee_Type: "N/A",
+        IsTimedIn: false,
+        IsValid: false
+    });
+};
 
 module.exports = mongoose.model('employee', employee_schema);
