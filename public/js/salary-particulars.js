@@ -23,37 +23,49 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error('Error fetching /salary_particulars', error);
         });
 
-    function setupPrintFunction() {
-        var printButton = document.getElementById("print-button");
-        if (printButton) {
-            printButton.addEventListener('click', printSalaryParticular);
-        }
-
-        function printSalaryParticular(event) {
-            event.preventDefault();
-
-            const salarySlip = document.getElementById('salary-slip');
-            const employeeNameElem = document.getElementById('employee-name');
-            const employeeEmailElem = document.getElementById('employee-email');
-            const employeeTypeElem = document.getElementById('employee-type');
-
-            if (salarySlip && employeeNameElem && employeeEmailElem && employeeTypeElem) {
+        async function setupPrintFunction() {
+            var printButton = document.getElementById("print-button");
+            if (printButton) {
+                printButton.addEventListener('click', printSalaryParticular);
+            }
+        
+            async function getEmployeeDetails(employeeId) {
+                try {
+                    const response = await fetch(`/api/employees/${employeeId}`);
+                    if (!response.ok) throw new Error("Employee not found");
+                    return await response.json();
+                } catch (error) {
+                    console.warn("USING NULL EMPLOYEE:", error.message);
+                    
+                    const nullEmployeeResponse = await fetch(`/api/employees/null`);
+                    return await nullEmployeeResponse.json();
+                }
+            }
+        
+            async function printSalaryParticular(event) {
+                event.preventDefault();
+        
+                const employeeId = document.getElementById('employee-id')?.value;
+                const salarySlip = document.getElementById('salary-slip');
+        
+                // fetch employee details (handles null automatically)
+                const employee = await getEmployeeDetails(employeeId);
+                const salaryContent = salarySlip ? salarySlip.innerHTML : "<p>No salary details available.</p>";
+        
                 const printWindow = window.open('', '', 'height=600,width=800');
                 printWindow.document.write('<html><head><title>Salary Particulars</title>');
-                printWindow.document.write('<link rel="stylesheet" href="/css/style.css">'); // Ensure the CSS path is correct
+                printWindow.document.write('<link rel="stylesheet" href="/css/style.css">');
                 printWindow.document.write('</head><body>');
                 printWindow.document.write('<div class="salary-container">');
                 printWindow.document.write('<h1>Employee Salary Particulars</h1>');
-                printWindow.document.write('<p><strong>Name:</strong> ' + employeeNameElem.innerText + '</p>');
-                printWindow.document.write('<p><strong>Email:</strong> ' + employeeEmailElem.innerText + '</p>');
-                printWindow.document.write('<p><strong>Employee Type:</strong> ' + employeeTypeElem.innerText + '</p>');
-                printWindow.document.write(salarySlip.innerHTML);
+                printWindow.document.write(`<p><strong>Name:</strong> ${employee.First_Name} ${employee.Last_Name}</p>`);
+                printWindow.document.write(`<p><strong>Email:</strong> ${employee.Email}</p>`);
+                printWindow.document.write(`<p><strong>Employee Type:</strong> ${employee.Employee_Type}</p>`);
+                printWindow.document.write(salaryContent);
                 printWindow.document.write('</div>');
                 printWindow.document.close();
                 printWindow.print();
-            } else {
-                console.error('Required elements not found for printing.');
             }
         }
-    }
+        
 });
